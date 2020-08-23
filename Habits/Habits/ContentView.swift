@@ -18,9 +18,18 @@ struct ContentView: View {
         
         NavigationView{
             List(activityManager.activities) { activity in
-                Text("\(activity.activityName)")
+                VStack {
+                    Text("\(activity.activityName)")
                     .font(.system(size: 20))
                     .fontWeight(.regular)
+
+                    Text("\(activity.activityDescription)")
+                        .font(.system(size: 15))
+                        .font(.subheadline)
+                    .lineLimit(4)
+                    
+                }
+                
             }
             .navigationBarTitle("Your Activities")
             .navigationBarItems(trailing: Button(action: {
