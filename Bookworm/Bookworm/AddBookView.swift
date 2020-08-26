@@ -47,7 +47,8 @@ struct AddBookView: View {
                         newBook.genre = self.genre
                         newBook.rating = Int16(self.rating)
                         newBook.review = self.review
-                        
+                        newBook.createdAt = Date()
+                        newBook.id = UUID()
                         try? self.context.save()
                         
                         self.presentationMode.wrappedValue.dismiss()

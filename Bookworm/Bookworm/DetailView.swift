@@ -19,20 +19,27 @@ struct DetailView: View {
     let book: Book
     
     var body: some View {
-        GeometryReader { geometry in
+        return GeometryReader { geometry in
             VStack {
                 ZStack(alignment: .bottomTrailing) {
                     Image(self.book.genre ?? "Fantasy")
                         .frame(maxWidth: geometry.size.width)
 
-                    Text(self.book.genre?.uppercased() ?? "FANTASY")
-                        .font(.caption)
-                        .fontWeight(.black)
-                        .padding(8)
-                        .foregroundColor(.white)
-                        .background(Color.black.opacity(0.75))
-                        .clipShape(Capsule())
-                        .offset(x: -5, y: -5)
+                    VStack {
+                        Text(self.book.genre?.uppercased() ?? "FANTASY")
+                            .font(.caption)
+                            .fontWeight(.black)
+                            .padding(8)
+                            .foregroundColor(.white)
+                            .background(Color.black.opacity(0.75))
+                            .clipShape(Capsule())
+                            .offset(x: -5, y: -5)
+                        Text(self.dateString(from: self.book.createdAt!))
+                            .foregroundColor(.white)
+                            .font(.caption)
+                            .fontWeight(.black)
+                            .padding(.bottom)
+                    }
                 }
                 Text(self.book.author ?? "Unknown author")
                     .font(.title)
@@ -61,6 +68,12 @@ struct DetailView: View {
             Image(systemName: "trash")
         })
         
+    }
+    func dateString(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        let dateStr = formatter.string(from: date)
+        return dateStr
     }
     
     func deleteBook() {
