@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19G2021" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="FriendClass" representedClassName="FriendClass" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="usersList" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UserClass" inverseName="friends" inverseEntity="UserClass"/>
+    </entity>
+    <entity name="UserClass" representedClassName="UserClass" syncable="YES">
+        <attribute name="about" optional="YES" attributeType="String"/>
+        <attribute name="address" optional="YES" attributeType="String"/>
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="friends" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FriendClass" inverseName="usersList" inverseEntity="FriendClass"/>
+    </entity>
+    <elements>
+        <element name="FriendClass" positionX="-18" positionY="45" width="128" height="88"/>
+        <element name="UserClass" positionX="-45" positionY="0" width="128" height="133"/>
+    </elements>
+</model>

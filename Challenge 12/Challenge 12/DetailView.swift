@@ -9,29 +9,29 @@
 import SwiftUI
 
 struct DetailView: View {
-    let user: User
+    let user: UserClass
     var body: some View {
         Form{
             
             Section(header: Text("NAME")) {
-                Text(user.name)
+                Text(user.wrappedName)
             }
             
             Section(header: Text("EMAIL")) {
-                Text(user.email)
+                Text(user.wrappedEmail)
             }
             
             Section(header: Text("ADDRESS")) {
-                Text(user.address)
+                Text(user.wrappedAddress)
             }
             
             Section(header: Text("ABOUT")) {
-                Text(user.about)
+                Text(user.wrappedAbout)
             }
             
             Section(header: Text("FRIENDS")) {
                 List {
-                    ForEach(user.friends, id: \.self) { user in
+                    ForEach(user.friendList, id: \.self) { user in
                         HStack {
                             ZStack {
                                 Image(systemName: "circle.fill")
@@ -42,12 +42,12 @@ struct DetailView: View {
                                     .fontWeight(.bold)
                                     .foregroundColor(.white)
                             }
-                            Text(user.name)
+                            Text(user.wrappedName)
                         }
                     }
                 }
             }
-        }.navigationBarTitle(Text(user.name), displayMode: .inline)
+        }.navigationBarTitle(Text(user.wrappedName), displayMode: .inline)
         
     }
 }

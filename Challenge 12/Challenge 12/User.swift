@@ -6,8 +6,8 @@
 //  Copyright © 2020 nikhit. All rights reserved.
 //
 
-import Foundation
-
+import SwiftUI
+import CoreData
 
 
 struct User: Decodable, Hashable {
@@ -20,6 +20,10 @@ struct User: Decodable, Hashable {
     var about: String
     var friends: [Friend]
     
+    var wrappedName: String {
+        name
+    }
+    
     var firstName: String {
         return String(name.split(separator: " ").first!)
     }
@@ -30,6 +34,11 @@ struct User: Decodable, Hashable {
     
     var shortName: String {
         return String(firstName.first!) + String(lastName.first!)
+    }
+    
+    
+    var wrappedEmail: String {
+        email
     }
 }
 
@@ -47,14 +56,37 @@ struct Friend: Decodable, Hashable {
     }
     
     var shortName: String {
-           return String(firstName.first!) + String(lastName.first!)
+        return String(firstName.first!) + String(lastName.first!)
     }
 }
 
 
-class NetworkMananger: ObservableObject {
-    @Published var users = [User]()
+class NetworkMananger: ObservableObject{
+    @Published var users = [UserClass]()
     
+    private var userData = [User]()
+    
+    
+    init() {
+        guard let moc = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext else {
+            fatalError("Unable to read managed object context.")
+        }
+        let request = NSFetchRequest<UserClass>(entityName: "UserClass")
+        
+        
+        do {
+            let fetchedResults = try moc.fetch(request)
+            print("Got the data")
+            if fetchedResults.isEmpty {
+                fetchUsers()
+            } else {
+                users = fetchedResults
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+        
+    }
     
     func fetchUsers() {
         guard let url = URL(string: "https://www.hackingwithswift.com/samples/friendface.json") else {
@@ -68,7 +100,8 @@ class NetworkMananger: ObservableObject {
                 do {
                     let usersData = try decoder.decode([User].self, from: safeData)
                     DispatchQueue.main.async {
-                        self.users = usersData
+                        self.userData = usersData
+                        self.saveUsers()
                     }
                     
                 } catch {
@@ -78,6 +111,47 @@ class NetworkMananger: ObservableObject {
         }.resume()
         
         print("Data received successfully!")
-        
     }
+    
+    
+    func saveUsers() {
+        guard let moc = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext else {
+            fatalError("Unable to read managed object context.")
+        }
+        
+        var friendMap = [String : FriendClass]()
+        
+        for user in userData {
+            let newUser = UserClass(context: moc)
+            newUser.id = user.id
+            newUser.name = user.name
+            newUser.email = user.email
+            newUser.about = user.about
+            newUser.address = user.address
+            
+            var friendsList = [FriendClass]()
+            
+            for friend in user.friends {
+                if let safeFriend = friendMap[friend.id] {
+                    friendsList.append(safeFriend)
+                } else {
+                    let newFriend = FriendClass(context: moc)
+                    newFriend.id = friend.id
+                    newFriend.name = friend.name
+                    friendMap[friend.id] = newFriend
+                }
+            }
+            
+            newUser.friends = NSSet(array: friendsList)
+            
+            users.append(newUser)
+        }
+        if moc.hasChanges {
+            try? moc.save()
+        }
+        print("Data saved to local storage", users.count)
+    }
+    
+    
 }
+

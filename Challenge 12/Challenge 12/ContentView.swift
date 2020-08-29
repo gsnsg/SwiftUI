@@ -10,7 +10,21 @@ import SwiftUI
 
 struct ContentView: View {
     
+    @Environment(\.managedObjectContext) var moc
+    
     @ObservedObject var networkManager = NetworkMananger()
+    
+//    var fetchRequest = FetchRequest<UserClass>(entity: UserClass.entity(), sortDescriptors: [])
+//    
+//    var fetchedResults: FetchedResults<UserClass> {
+//        fetchRequest.wrappedValue
+//    }
+//    
+//    @State var users = [UserClass]()
+//    
+//    // Dummy variable for reloading view
+//    @State var reloadView = false
+    
     
     var body: some View {
         NavigationView {
@@ -29,10 +43,10 @@ struct ContentView: View {
                             }
                             
                             VStack (alignment: .leading){
-                                Text("\(user.firstName) \(user.lastName)")
+                                Text("\(user.wrappedName)")
                                     .font(.headline)
                                 
-                                Text("\(user.email)")
+                                Text("\(user.wrappedEmail)")
                                     .font(.subheadline)
                             }
                         }
@@ -42,9 +56,9 @@ struct ContentView: View {
                 }
             }
             .navigationBarTitle("Users")
-            .onAppear(perform: networkManager.fetchUsers)
         }
     }
+    
     
 }
 
