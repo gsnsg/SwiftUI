@@ -23,8 +23,13 @@ struct ContentView: View {
     @State private var inputImage: UIImage?
     @State private var showingFilterSheet = false
     @State private var processedImage: UIImage?
+
+    @State private var showingAlert = false
+    @State private var alertTitle = ""
+    @State private var alertMessage = ""
     
     @State var currentFilter: CIFilter = CIFilter.sepiaTone()
+    @State private var filterString = "Sepia Tone"
     let context = CIContext()
     
     
@@ -69,14 +74,20 @@ struct ContentView: View {
                 }.padding(.vertical)
                 
                 HStack {
-                    Button("Change Filter") {
+                    Button(filterString) {
                         self.showingFilterSheet = true
                     }
                     
                     Spacer()
                     
                     Button("Save") {
-                        guard let processedImage = self.processedImage else { return }
+                        guard let processedImage = self.processedImage else {
+                            self.alertTitle = "Whoops!"
+                            self.alertMessage = "Please select an Image to save"
+                            self.showingAlert.toggle()
+                            return
+                            
+                        }
                         
                         let imageSaver = ImageSaver()
                         
@@ -101,15 +112,39 @@ struct ContentView: View {
             }
             .actionSheet(isPresented: $showingFilterSheet) {
                 ActionSheet(title: Text("Select a Filter"), buttons: [
-                    .default(Text("Crystallize")) { self.setFilter(CIFilter.crystallize())},
-                    .default(Text("Edges")) { self.setFilter(CIFilter.edges()) },
-                    .default(Text("Gaussian Blur")) { self.setFilter(CIFilter.gaussianBlur()) },
-                    .default(Text("Pixellate")) { self.setFilter(CIFilter.pixellate()) },
-                    .default(Text("Sepia Tone")) { self.setFilter(CIFilter.sepiaTone()) },
-                    .default(Text("Unsharp Mask")) { self.setFilter(CIFilter.unsharpMask()) },
-                    .default(Text("Vignette")) { self.setFilter(CIFilter.vignette()) },
+                    .default(Text("Crystallize")) {
+                        self.filterString = "Crystallize"
+                        self.setFilter(CIFilter.crystallize())
+                    },
+                    .default(Text("Edges")) {
+                        self.filterString = "Edges"
+                        self.setFilter(CIFilter.edges())
+                    },
+                    .default(Text("Gaussian Blur")) {
+                        self.filterString = "Gaussian Blur"
+                        self.setFilter(CIFilter.gaussianBlur())
+                    },
+                    .default(Text("Pixellate")) {
+                        self.filterString = "Pixellate"
+                        self.setFilter(CIFilter.pixellate())
+                    },
+                    .default(Text("Sepia Tone")) {
+                        self.filterString = "Sepia Tone"
+                        self.setFilter(CIFilter.sepiaTone())
+                    },
+                    .default(Text("Unsharp Mask")) {
+                        self.filterString = "Unsharp Mask"
+                        self.setFilter(CIFilter.unsharpMask())
+                    },
+                    .default(Text("Vignette")) {
+                        self.filterString = "Vignette"
+                        self.setFilter(CIFilter.vignette())
+                    },
                     .cancel()
                 ])
+            }
+            .alert(isPresented: $showingAlert) {
+                Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("OK")))
             }
             
         }
